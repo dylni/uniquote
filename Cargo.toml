@@ -1,6 +1,6 @@
 [package]
 name = "uniquote"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["dylni"]
 edition = "2018"
 exclude = [".*", "/rustfmt.toml", "/tests"]
