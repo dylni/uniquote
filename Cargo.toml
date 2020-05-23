@@ -1,0 +1,23 @@
+[package]
+name = "uniquote"
+version = "0.1.0"
+authors = ["dylni"]
+edition = "2018"
+exclude = [".*", "/rustfmt.toml", "/tests"]
+description = """
+Quote strings for clear display in output
+"""
+repository = "https://github.com/dylni/uniquote"
+readme = "README.md"
+keywords = ["osstr", "path", "print", "quote", "unprintable"]
+categories = ["command-line-interface", "no-std", "value-formatting", "wasm"]
+license = "MIT OR Apache-2.0"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = ["std"]
+alloc = []
+const_generics = []
+std = []
