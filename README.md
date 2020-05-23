@@ -45,6 +45,6 @@ in this crate, as defined in [LICENSE-APACHE], shall be licensed according to
 [`Path::display`]: https://doc.rust-lang.org/std/path/struct.Path.html#method.display
 [`Path::to_string_lossy`]: https://doc.rust-lang.org/std/path/struct.Path.html#method.to_string_lossy
 [`println!`]: https://doc.rust-lang.org/std/macro.println.html
-[`Quote::quote`]: trait.Quote.html#method.quote
+[`Quote::quote`]: https://docs.rs/uniquote/*/uniquote/trait.Quote.html#method.quote
 [`REPLACEMENT_CHARACTER`]: https://doc.rust-lang.org/std/char/constant.REPLACEMENT_CHARACTER.html
 [`str::escape_debug`]: https://doc.rust-lang.org/std/primitive.str.html#method.escape_debug
