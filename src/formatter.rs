@@ -49,7 +49,7 @@ impl<'a> Formatter<'a> {
     pub(super) fn from_inner_mut<'b>(
         formatter: &'b mut fmt::Formatter<'a>,
     ) -> &'b mut Self {
-        // SAFETY: This struct is designed to make this operation safe.
+        // SAFETY: This struct has a layout that makes this operation safe.
         #[allow(clippy::transmute_ptr_to_ptr)]
         unsafe {
             mem::transmute(formatter)
