@@ -206,10 +206,9 @@ mod std {
                     target_os = "hermit",
                     target_os = "redox",
                     unix,
-                    target_os = "vxworks"
                 ))]
                 use std::os::unix as os;
-                #[cfg(any(target_os = "wasi"))]
+                #[cfg(target_os = "wasi")]
                 use std::os::wasi as os;
 
                 use os::ffi::OsStrExt;
