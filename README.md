@@ -20,7 +20,7 @@ Add the following lines to your "Cargo.toml" file:
 
 ```toml
 [dependencies]
-uniquote = "1.0"
+uniquote = "1.1"
 ```
 
 See the [documentation] for available functionality and examples.
