@@ -29,6 +29,8 @@ See the [documentation] for available functionality and examples.
 
 The minimum supported Rust toolchain version is currently Rust 1.37.0.
 
+However, the "min\_const\_generics" feature requires a nightly compiler.
+
 ## License
 
 Licensing terms are specified in [COPYRIGHT].

@@ -62,7 +62,7 @@
 //!
 //! ### Nightly Features
 //!
-//! - **const\_generics** -
+//! - **min\_const\_generics** -
 //!   Provides an implementation of [`Quote`] for [`[u8; N]`][array].
 //!
 //! # Examples
@@ -122,6 +122,7 @@
 #![cfg_attr(feature = "const_generics", allow(incomplete_features))]
 #![doc(html_root_url = "https://docs.rs/uniquote/*")]
 #![cfg_attr(feature = "const_generics", feature(const_generics))]
+#![cfg_attr(feature = "min_const_generics", feature(min_const_generics))]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![warn(unused_results)]
 

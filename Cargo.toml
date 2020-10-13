@@ -14,7 +14,7 @@ categories = ["command-line-interface", "no-std", "value-formatting", "wasm"]
 license = "MIT OR Apache-2.0"
 
 [package.metadata.docs.rs]
-all-features = true
+features = ["min_const_generics"]
 
 [features]
 default = ["std"]
@@ -23,3 +23,4 @@ alloc = []
 std = ["alloc"]
 
 const_generics = []
+min_const_generics = []

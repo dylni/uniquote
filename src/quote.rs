@@ -123,7 +123,7 @@ r#impl!([u8], len);
 r#impl!(char, len_utf8);
 r#impl!(str, len);
 
-#[cfg(feature = "const_generics")]
+#[cfg(any(feature = "const_generics", feature = "min_const_generics"))]
 impl<const N: usize> Quote for [u8; N] {
     #[inline]
     fn escape(&self, formatter: &mut Formatter<'_>) -> Result {
