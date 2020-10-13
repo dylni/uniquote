@@ -62,7 +62,7 @@
 //!
 //! ### Nightly Features
 //!
-//! - **const_generics** -
+//! - **const\_generics** -
 //!   Provides an implementation of [`Quote`] for [`[u8; N]`][array].
 //!
 //! # Examples
@@ -71,12 +71,11 @@
 //!
 //! ```
 //! use std::env;
-//! # use std::io;
 //!
 //! use uniquote::Quote;
 //!
-//! # #[cfg(feature = "std")]
 //! for (i, arg) in env::args_os().enumerate() {
+//! #   #[cfg(feature = "std")]
 //!     println!("arg #{} is {}", i, arg.quote());
 //! }
 //! ```
@@ -126,7 +125,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![warn(unused_results)]
 
-#[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
 mod escape;

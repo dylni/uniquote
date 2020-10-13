@@ -38,10 +38,9 @@ pub type Result = result::Result<(), Error>;
 ///
 /// Although this type is annotated with `#[repr(transparent)]`, the inner
 /// representation is not stable. Transmuting between this type and any other
-/// causes immediate [undefined behavior].
+/// causes immediate undefined behavior.
 ///
 /// [`Quote::escape`]: trait.Quote.html#method.escape
-/// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
 #[repr(transparent)]
 pub struct Formatter<'a>(pub(super) fmt::Formatter<'a>);
 

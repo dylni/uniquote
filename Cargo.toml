@@ -18,6 +18,8 @@ all-features = true
 
 [features]
 default = ["std"]
+
 alloc = []
+std = ["alloc"]
+
 const_generics = []
-std = []

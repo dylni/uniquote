@@ -113,9 +113,7 @@ macro_rules! r#impl {
                 &self,
                 formatter: &mut $crate::Formatter<'_>,
             ) -> $crate::Result {
-                use $crate::Quote;
-
-                Quote::escape(&**self, formatter)
+                (**self).escape(formatter)
             }
         }
     };
@@ -129,11 +127,11 @@ r#impl!(str, len);
 impl<const N: usize> Quote for [u8; N] {
     #[inline]
     fn escape(&self, formatter: &mut Formatter<'_>) -> Result {
-        self.as_ref().escape(formatter)
+        self[..].escape(formatter)
     }
 }
 
-#[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg(feature = "alloc")]
 mod alloc {
     use alloc::string::String;
     use alloc::vec::Vec;

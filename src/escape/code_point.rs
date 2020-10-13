@@ -3,7 +3,7 @@ use core::char::DecodeUtf16Error;
 use core::convert::TryFrom;
 use core::convert::TryInto;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub(super) struct CodePoint(u32);
 
 impl From<char> for CodePoint {

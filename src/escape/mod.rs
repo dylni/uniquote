@@ -35,7 +35,6 @@ fn is_printable(ch: char) -> bool {
     }
 }
 
-#[derive(Debug)]
 enum EscapedCodePoint {
     Hex(CodePoint),
     Literal(char),
