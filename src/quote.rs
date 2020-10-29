@@ -56,8 +56,7 @@ pub trait Quote {
     /// assert_eq!(r#""foo,bar""#, Strings("foo", "bar").quote().to_string());
     /// ```
     ///
-    /// [`Display::fmt`]: https://doc.rust-lang.org/std/fmt/trait.Display.html#tymethod.fmt
-    /// [format]: index.html#format
+    /// [format]: super#format
     fn escape(&self, formatter: &mut Formatter<'_>) -> Result;
 
     /// Quotes a string using the format described in the [the module-level
@@ -81,9 +80,7 @@ pub trait Quote {
     /// # Ok::<_, io::Error>(())
     /// ```
     ///
-    /// [`Display`]: https://doc.rust-lang.org/std/fmt/trait.Display.html
-    /// [format]: index.html#format
-    /// [`ToString::to_string`]: https://doc.rust-lang.org/std/string/trait.ToString.html#tymethod.to_string
+    /// [format]: super#format
     #[inline]
     #[must_use]
     fn quote(&self) -> QuotedDisplay<&Self> {

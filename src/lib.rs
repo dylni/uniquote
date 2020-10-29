@@ -107,17 +107,13 @@
 //! ```
 //!
 //! [array]: https://doc.rust-lang.org/std/primitive.array.html
-//! [control characters]: https://doc.rust-lang.org/std/primitive.char.html#method.is_ascii_control
-//! [`Debug`]: https://doc.rust-lang.org/std/fmt/trait.Debug.html
-//! [`Display`]: https://doc.rust-lang.org/std/fmt/trait.Display.html
-//! [`Path`]: https://doc.rust-lang.org/std/path/struct.Path.html
-//! [`Path::display`]: https://doc.rust-lang.org/std/path/struct.Path.html#method.display
-//! [`Path::to_string_lossy`]: https://doc.rust-lang.org/std/path/struct.Path.html#method.to_string_lossy
-//! [`println!`]: https://doc.rust-lang.org/std/macro.println.html
-//! [`Quote`]: trait.Quote.html
-//! [`Quote::quote`]: trait.Quote.html#method.quote
-//! [`REPLACEMENT_CHARACTER`]: https://doc.rust-lang.org/std/char/constant.REPLACEMENT_CHARACTER.html
-//! [`str::escape_debug`]: https://doc.rust-lang.org/std/primitive.str.html#method.escape_debug
+//! [control characters]: char::is_ascii_control
+//! [`Debug`]: ::std::fmt::Debug
+//! [`Display`]: ::std::fmt::Display
+//! [`Path`]: ::std::path::Path
+//! [`Path::display`]: ::std::path::Path::display
+//! [`Path::to_string_lossy`]: ::std::path::Path::to_string_lossy
+//! [`REPLACEMENT_CHARACTER`]: ::std::char::REPLACEMENT_CHARACTER
 
 #![cfg_attr(feature = "const_generics", allow(incomplete_features))]
 #![doc(html_root_url = "https://docs.rs/uniquote/*")]

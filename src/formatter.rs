@@ -7,8 +7,7 @@ use core::result;
 ///
 /// This type is used similarly to [`fmt::Error`] in the standard library.
 ///
-/// [`fmt::Error`]: https://doc.rust-lang.org/std/fmt/struct.Error.html
-/// [`Quote::escape`]: trait.Quote.html#method.escape
+/// [`Quote::escape`]: super::Quote::escape
 #[derive(Debug, Eq, PartialEq)]
 pub struct Error(pub(super) fmt::Error);
 
@@ -26,8 +25,7 @@ impl ::std::error::Error for Error {}
 ///
 /// This type is used similarly to [`fmt::Result`] in the standard library.
 ///
-/// [`fmt::Result`]: https://doc.rust-lang.org/std/fmt/type.Result.html
-/// [`Quote::escape`]: trait.Quote.html#method.escape
+/// [`Quote::escape`]: super::Quote::escape
 pub type Result = result::Result<(), Error>;
 
 /// The type passed between calls to [`Quote::escape`].
@@ -40,7 +38,7 @@ pub type Result = result::Result<(), Error>;
 /// representation is not stable. Transmuting between this type and any other
 /// causes immediate undefined behavior.
 ///
-/// [`Quote::escape`]: trait.Quote.html#method.escape
+/// [`Quote::escape`]: super::Quote::escape
 #[repr(transparent)]
 pub struct Formatter<'a>(pub(super) fmt::Formatter<'a>);
 
