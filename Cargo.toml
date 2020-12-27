@@ -14,7 +14,7 @@ categories = ["command-line-interface", "no-std", "value-formatting", "wasm"]
 license = "MIT OR Apache-2.0"
 
 [package.metadata.docs.rs]
-features = ["min_const_generics"]
+all-features = true
 rustc-args = ["--cfg", "uniquote_docs_rs"]
 rustdoc-args = [
     "--cfg", "uniquote_docs_rs",
@@ -30,5 +30,4 @@ default = ["std"]
 alloc = []
 std = ["alloc"]
 
-const_generics = []
 min_const_generics = []

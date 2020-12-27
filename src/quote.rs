@@ -120,7 +120,7 @@ r#impl!([u8], len);
 r#impl!(char, len_utf8);
 r#impl!(str, len);
 
-#[cfg(any(feature = "const_generics", feature = "min_const_generics"))]
+#[cfg(feature = "min_const_generics")]
 #[cfg_attr(uniquote_docs_rs, doc(cfg(feature = "min_const_generics")))]
 impl<const N: usize> Quote for [u8; N] {
     #[inline]

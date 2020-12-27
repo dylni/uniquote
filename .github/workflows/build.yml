@@ -52,7 +52,7 @@ jobs:
     - run: rustup default ${{ matrix.version }}
     - run: cargo test
     - if: matrix.version == 'nightly'
-      run: cargo test --features min_const_generics
+      run: cargo test --all-features
     - run: cargo test --no-default-features
     - run: cargo test --release
     timeout-minutes: 10

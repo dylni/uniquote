@@ -115,9 +115,7 @@
 //! [`Path::to_string_lossy`]: ::std::path::Path::to_string_lossy
 //! [`REPLACEMENT_CHARACTER`]: ::std::char::REPLACEMENT_CHARACTER
 
-#![cfg_attr(feature = "const_generics", allow(incomplete_features))]
 #![doc(html_root_url = "https://docs.rs/uniquote/*")]
-#![cfg_attr(feature = "const_generics", feature(const_generics))]
 #![cfg_attr(uniquote_docs_rs, feature(doc_cfg))]
 #![cfg_attr(feature = "min_const_generics", feature(min_const_generics))]
 #![cfg_attr(not(feature = "std"), no_std)]
