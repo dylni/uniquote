@@ -106,7 +106,6 @@
 //! # }
 //! ```
 //!
-//! [array]: https://doc.rust-lang.org/std/primitive.array.html
 //! [control characters]: char::is_ascii_control
 //! [`Debug`]: ::std::fmt::Debug
 //! [`Display`]: ::std::fmt::Display
@@ -116,7 +115,6 @@
 //! [`REPLACEMENT_CHARACTER`]: ::std::char::REPLACEMENT_CHARACTER
 
 #![cfg_attr(feature = "min_const_generics", allow(stable_features))]
-#![doc(html_root_url = "https://docs.rs/uniquote/*")]
 #![cfg_attr(uniquote_docs_rs, feature(doc_cfg))]
 #![cfg_attr(feature = "min_const_generics", feature(min_const_generics))]
 #![cfg_attr(not(feature = "std"), no_std)]
