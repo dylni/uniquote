@@ -47,10 +47,7 @@ pub struct Formatter<'a>(pub(super) fmt::Formatter<'a>);
 impl<'a> Formatter<'a> {
     pub(super) fn new<'b>(f: &'b mut fmt::Formatter<'a>) -> &'b mut Self {
         // SAFETY: This struct has a layout that makes this operation safe.
-        #[allow(clippy::transmute_ptr_to_ptr)]
-        unsafe {
-            mem::transmute(f)
-        }
+        unsafe { mem::transmute(f) }
     }
 
     /// Provides an implementation of [`Quote::escape`] for a UTF-16 string
