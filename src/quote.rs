@@ -13,14 +13,14 @@ impl<T> Display for QuotedDisplay<&T>
 where
     T: Quote + ?Sized,
 {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_char(QUOTE)?;
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_char(QUOTE)?;
 
         self.0
-            .escape(Formatter::from_inner_mut(formatter))
+            .escape(Formatter::from_inner_mut(f))
             .map_err(|x| x.0)?;
 
-        formatter.write_char(QUOTE)
+        f.write_char(QUOTE)
     }
 }
 
@@ -57,7 +57,7 @@ pub trait Quote {
     /// ```
     ///
     /// [format]: super#format
-    fn escape(&self, formatter: &mut Formatter<'_>) -> Result;
+    fn escape(&self, f: &mut Formatter<'_>) -> Result;
 
     /// Quotes a string using the format described in the [the module-level
     /// documentation][format].
@@ -92,25 +92,19 @@ macro_rules! r#impl {
     ( $type:ty , $length_method:ident ) => {
         impl $crate::Quote for $type {
             #[inline]
-            fn escape(
-                &self,
-                formatter: &mut $crate::Formatter<'_>,
-            ) -> $crate::Result {
+            fn escape(&self, f: &mut $crate::Formatter<'_>) -> $crate::Result {
                 use $crate::escape::Escape;
                 use $crate::Error;
 
-                Escape::escape(self, &mut formatter.0).map_err(Error)
+                Escape::escape(self, &mut f.0).map_err(Error)
             }
         }
     };
     ( $type:ty ) => {
         impl $crate::Quote for $type {
             #[inline]
-            fn escape(
-                &self,
-                formatter: &mut $crate::Formatter<'_>,
-            ) -> $crate::Result {
-                (**self).escape(formatter)
+            fn escape(&self, f: &mut $crate::Formatter<'_>) -> $crate::Result {
+                (**self).escape(f)
             }
         }
     };
@@ -124,8 +118,8 @@ r#impl!(str, len);
 #[cfg_attr(uniquote_docs_rs, doc(cfg(feature = "min_const_generics")))]
 impl<const N: usize> Quote for [u8; N] {
     #[inline]
-    fn escape(&self, formatter: &mut Formatter<'_>) -> Result {
-        self[..].escape(formatter)
+    fn escape(&self, f: &mut Formatter<'_>) -> Result {
+        self[..].escape(f)
     }
 }
 
@@ -159,15 +153,15 @@ mod std {
 
     impl Quote for CStr {
         #[inline]
-        fn escape(&self, formatter: &mut Formatter<'_>) -> Result {
-            self.to_bytes().escape(formatter)
+        fn escape(&self, f: &mut Formatter<'_>) -> Result {
+            self.to_bytes().escape(f)
         }
     }
 
     impl Quote for Path {
         #[inline]
-        fn escape(&self, formatter: &mut Formatter<'_>) -> Result {
-            self.as_os_str().escape(formatter)
+        fn escape(&self, f: &mut Formatter<'_>) -> Result {
+            self.as_os_str().escape(f)
         }
     }
 }

@@ -13,8 +13,8 @@ pub struct Error(pub(super) fmt::Error);
 
 impl Display for Error {
     #[inline]
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.0.fmt(formatter)
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.fmt(f)
     }
 }
 
@@ -44,12 +44,12 @@ pub struct Formatter<'a>(pub(super) fmt::Formatter<'a>);
 
 impl<'a> Formatter<'a> {
     pub(super) fn from_inner_mut<'b>(
-        formatter: &'b mut fmt::Formatter<'a>,
+        f: &'b mut fmt::Formatter<'a>,
     ) -> &'b mut Self {
         // SAFETY: This struct has a layout that makes this operation safe.
         #[allow(clippy::transmute_ptr_to_ptr)]
         unsafe {
-            mem::transmute(formatter)
+            mem::transmute(f)
         }
     }
 }

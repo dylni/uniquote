@@ -44,35 +44,35 @@ enum EscapedCodePoint {
 }
 
 impl EscapedCodePoint {
-    fn format(self, formatter: &mut Formatter<'_>) -> fmt::Result {
+    fn format(self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Literal(ch) => return formatter.write_char(ch),
+            Self::Literal(ch) => return f.write_char(ch),
             Self::Repeated(ch) => {
                 for _ in 0..2 {
-                    formatter.write_char(ch)?;
+                    f.write_char(ch)?;
                 }
                 return Ok(());
             }
             _ => {}
         }
 
-        formatter.write_char(START_ESCAPE)?;
+        f.write_char(START_ESCAPE)?;
 
         if let Self::Quote() = self {
-            formatter.write_char(QUOTE)?;
+            f.write_char(QUOTE)?;
         } else {
-            formatter.write_char('~')?;
+            f.write_char('~')?;
 
             match self {
                 Self::Hex(code_point) => {
-                    write!(formatter, "u{:x}", u32::from(code_point))?;
+                    write!(f, "u{:x}", u32::from(code_point))?;
                 }
-                Self::Sequence(sequence) => formatter.write_str(sequence)?,
+                Self::Sequence(sequence) => f.write_str(sequence)?,
                 _ => unreachable!(),
             }
         }
 
-        formatter.write_char(END_ESCAPE)
+        f.write_char(END_ESCAPE)
     }
 }
 
@@ -109,11 +109,11 @@ impl From<CodePoint> for EscapedCodePoint {
 }
 
 pub(super) trait Escape {
-    fn escape(&self, formatter: &mut Formatter<'_>) -> fmt::Result;
+    fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result;
 }
 
 impl Escape for [u8] {
-    fn escape(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+    fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let mut string = self;
         while !string.is_empty() {
             let mut invalid = None;
@@ -131,12 +131,12 @@ impl Escape for [u8] {
                 }
             };
 
-            valid.escape(formatter)?;
+            valid.escape(f)?;
             string = &string[valid.len()..];
 
             if let Some(invalid) = invalid {
                 for &byte in invalid {
-                    EscapedCodePoint::from(byte).format(formatter)?;
+                    EscapedCodePoint::from(byte).format(f)?;
                 }
                 string = &string[invalid.len()..];
             }
@@ -146,13 +146,13 @@ impl Escape for [u8] {
 }
 
 impl Escape for char {
-    fn escape(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
-        self.encode_utf8(&mut [0; 4]).escape(formatter)
+    fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        self.encode_utf8(&mut [0; 4]).escape(f)
     }
 }
 
 impl Escape for str {
-    fn escape(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+    fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
         // [str] can be written more efficiently than multiple [char] values,
         // since it is already encoded as UTF-8 bytes. The [Debug]
         // implementation for [str] uses the same optimization.
@@ -161,7 +161,7 @@ impl Escape for str {
             ( $index:expr ) => {
                 let index = $index;
                 if index != escaped_index {
-                    formatter.write_str(&self[escaped_index..index])?;
+                    f.write_str(&self[escaped_index..index])?;
                 }
             };
         }
@@ -177,7 +177,7 @@ impl Escape for str {
                 false
             } else {
                 push_literal!(i);
-                code_point.format(formatter)?;
+                code_point.format(f)?;
                 true
             };
         }
@@ -198,7 +198,7 @@ mod std {
     use super::Escape;
 
     impl Escape for OsStr {
-        fn escape(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+        fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
             #[cfg(not(windows))]
             {
                 #[cfg(any(
@@ -212,7 +212,7 @@ mod std {
 
                 use os::ffi::OsStrExt;
 
-                self.as_bytes().escape(formatter)
+                self.as_bytes().escape(f)
             }
             #[cfg(windows)]
             {
@@ -226,7 +226,7 @@ mod std {
                     ch.map(EscapedCodePoint::from)
                         .map_err(CodePoint::from)
                         .unwrap_or_else(Into::into)
-                        .format(formatter)?;
+                        .format(f)?;
                 }
                 Ok(())
             }
