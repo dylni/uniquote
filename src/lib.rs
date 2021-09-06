@@ -60,11 +60,6 @@
 //!   library. When this feature is disabled, this crate can be used in
 //!   `#![no_std]` environments.
 //!
-//! ### Nightly Features
-//!
-//! - **min\_const\_generics** -
-//!   Provides an implementation of [`Quote`] for [`[u8; N]`][array].
-//!
 //! # Examples
 //!
 //! Print arguments passed on the command line:
