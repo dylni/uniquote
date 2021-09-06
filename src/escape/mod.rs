@@ -112,39 +112,6 @@ pub(super) trait Escape {
     fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result;
 }
 
-impl Escape for [u8] {
-    fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let mut string = self;
-        while !string.is_empty() {
-            let mut invalid = None;
-            let valid = match str::from_utf8(string) {
-                Ok(string) => string,
-                Err(error) => {
-                    let (valid, string) = string.split_at(error.valid_up_to());
-
-                    let invalid_length =
-                        error.error_len().unwrap_or_else(|| string.len());
-                    invalid = Some(&string[..invalid_length]);
-
-                    // SAFETY: This slice was validated to be UTF-8.
-                    unsafe { str::from_utf8_unchecked(valid) }
-                }
-            };
-
-            valid.escape(f)?;
-            string = &string[valid.len()..];
-
-            if let Some(invalid) = invalid {
-                for &byte in invalid {
-                    EscapedCodePoint::from(byte).format(f)?;
-                }
-                string = &string[invalid.len()..];
-            }
-        }
-        Ok(())
-    }
-}
-
 impl Escape for char {
     fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
         self.encode_utf8(&mut [0; 4]).escape(f)
@@ -189,47 +156,47 @@ impl Escape for str {
     }
 }
 
-#[cfg(feature = "std")]
-mod std {
-    use std::ffi::OsStr;
-    use std::fmt;
-    use std::fmt::Formatter;
+impl Escape for [u8] {
+    fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        let mut string = self;
+        while !string.is_empty() {
+            let mut invalid = None;
+            let valid = match str::from_utf8(string) {
+                Ok(string) => string,
+                Err(error) => {
+                    let (valid, string) = string.split_at(error.valid_up_to());
 
-    use super::Escape;
+                    let invalid_length =
+                        error.error_len().unwrap_or_else(|| string.len());
+                    invalid = Some(&string[..invalid_length]);
 
-    impl Escape for OsStr {
-        fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
-            #[cfg(not(windows))]
-            {
-                #[cfg(any(
-                    target_os = "hermit",
-                    target_os = "redox",
-                    unix,
-                ))]
-                use std::os::unix as os;
-                #[cfg(target_os = "wasi")]
-                use std::os::wasi as os;
-
-                use os::ffi::OsStrExt;
-
-                self.as_bytes().escape(f)
-            }
-            #[cfg(windows)]
-            {
-                use std::char;
-                use std::os::windows::ffi::OsStrExt;
-
-                use super::CodePoint;
-                use super::EscapedCodePoint;
-
-                for ch in char::decode_utf16(self.encode_wide()) {
-                    ch.map(EscapedCodePoint::from)
-                        .map_err(CodePoint::from)
-                        .unwrap_or_else(Into::into)
-                        .format(f)?;
+                    // SAFETY: This slice was validated to be UTF-8.
+                    unsafe { str::from_utf8_unchecked(valid) }
                 }
-                Ok(())
+            };
+
+            valid.escape(f)?;
+            string = &string[valid.len()..];
+
+            if let Some(invalid) = invalid {
+                for &byte in invalid {
+                    EscapedCodePoint::from(byte).format(f)?;
+                }
+                string = &string[invalid.len()..];
             }
         }
+        Ok(())
     }
+}
+
+pub(super) fn escape_utf16<I>(iter: I, f: &mut Formatter<'_>) -> fmt::Result
+where
+    I: IntoIterator<Item = u16>,
+{
+    for ch in char::decode_utf16(iter) {
+        ch.map(EscapedCodePoint::from)
+            .unwrap_or_else(|x| CodePoint::from(x).into())
+            .format(f)?;
+    }
+    Ok(())
 }
