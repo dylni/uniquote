@@ -141,10 +141,6 @@ mod alloc {
 mod std {
     use std::ffi::CStr;
     use std::ffi::CString;
-    use std::ffi::OsStr;
-    use std::ffi::OsString;
-    use std::path::Path;
-    use std::path::PathBuf;
 
     use crate::Formatter;
     use crate::Result;
@@ -158,39 +154,60 @@ mod std {
         }
     }
 
-    impl Quote for OsStr {
-        #[inline]
-        fn escape(&self, f: &mut Formatter<'_>) -> Result {
-            #[cfg(not(windows))]
-            {
-                #[cfg(any(
-                    target_os = "hermit",
-                    target_os = "redox",
-                    unix,
-                ))]
-                use std::os::unix as os;
-                #[cfg(target_os = "wasi")]
-                use std::os::wasi as os;
+    impl_with_deref!(CString);
 
-                use os::ffi::OsStrExt;
+    #[cfg(any(
+        target_os = "hermit",
+        target_os = "redox",
+        target_os = "wasi",
+        unix,
+        windows,
+    ))]
+    mod os_str {
+        use std::ffi::OsStr;
+        use std::ffi::OsString;
+        use std::path::Path;
+        use std::path::PathBuf;
 
-                self.as_bytes().escape(f)
-            }
-            #[cfg(windows)]
-            {
-                use std::os::windows::ffi::OsStrExt;
+        use crate::Formatter;
+        use crate::Result;
 
-                f.escape_utf16(self.encode_wide())
+        use super::super::Quote;
+
+        impl Quote for OsStr {
+            #[inline]
+            fn escape(&self, f: &mut Formatter<'_>) -> Result {
+                #[cfg(windows)]
+                {
+                    use std::os::windows::ffi::OsStrExt;
+
+                    f.escape_utf16(self.encode_wide())
+                }
+                #[cfg(not(windows))]
+                {
+                    #[cfg(any(
+                        target_os = "hermit",
+                        target_os = "redox",
+                        unix,
+                    ))]
+                    use std::os::unix as os;
+                    #[cfg(target_os = "wasi")]
+                    use std::os::wasi as os;
+
+                    use os::ffi::OsStrExt;
+
+                    self.as_bytes().escape(f)
+                }
             }
         }
-    }
 
-    impl Quote for Path {
-        #[inline]
-        fn escape(&self, f: &mut Formatter<'_>) -> Result {
-            self.as_os_str().escape(f)
+        impl Quote for Path {
+            #[inline]
+            fn escape(&self, f: &mut Formatter<'_>) -> Result {
+                self.as_os_str().escape(f)
+            }
         }
-    }
 
-    impl_with_deref!(CString, OsString, PathBuf);
+        impl_with_deref!(OsString, PathBuf);
+    }
 }
