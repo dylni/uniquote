@@ -29,5 +29,3 @@ default = ["std"]
 
 alloc = []
 std = ["alloc"]
-
-min_const_generics = []

@@ -103,8 +103,6 @@ macro_rules! r#impl {
 }
 r#impl!(char, str, [u8]);
 
-#[cfg(feature = "min_const_generics")]
-#[cfg_attr(uniquote_docs_rs, doc(cfg(feature = "min_const_generics")))]
 impl<const N: usize> Quote for [u8; N] {
     #[inline]
     fn escape(&self, f: &mut Formatter<'_>) -> Result {
@@ -156,13 +154,7 @@ mod std {
 
     impl_with_deref!(CString);
 
-    #[cfg(any(
-        target_os = "hermit",
-        target_os = "redox",
-        target_os = "wasi",
-        unix,
-        windows,
-    ))]
+    #[cfg(any(target_os = "hermit", target_os = "wasi", unix, windows))]
     mod os_str {
         use std::ffi::OsStr;
         use std::ffi::OsString;
@@ -185,11 +177,7 @@ mod std {
                 }
                 #[cfg(not(windows))]
                 {
-                    #[cfg(any(
-                        target_os = "hermit",
-                        target_os = "redox",
-                        unix,
-                    ))]
+                    #[cfg(any(target_os = "hermit", unix))]
                     use std::os::unix as os;
                     #[cfg(target_os = "wasi")]
                     use std::os::wasi as os;
