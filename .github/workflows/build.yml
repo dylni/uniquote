@@ -29,7 +29,7 @@ jobs:
     strategy:
       matrix:
         target: [wasm32-wasi, x86_64-unknown-redox]
-        version: [1.52.0, stable, nightly]
+        version: [1.52.0, stable, beta, nightly]
   test:
     needs: [build]
     runs-on: ${{ matrix.platform }}
@@ -41,4 +41,4 @@ jobs:
     strategy:
       matrix:
         platform: [macos-latest, ubuntu-latest, windows-latest]
-        version: [1.52.0, stable, nightly]
+        version: [1.52.0, stable, beta, nightly]
