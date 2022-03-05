@@ -3,6 +3,7 @@ name = "uniquote"
 version = "3.0.0"
 authors = ["dylni"]
 edition = "2018"
+rust-version = "1.52.0"
 exclude = [".*", "/rustfmt.toml", "/tests"]
 description = """
 Quote strings for clear display in output
