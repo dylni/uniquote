@@ -21,18 +21,15 @@ fn table_contains(table: &[(u32, u32)], code_point: CodePoint) -> bool {
         Ok(_) => true,
         Err(index) => index
             .checked_sub(1)
-            .filter(|&x| code_point <= table[x].1)
-            .is_some(),
+            .map(|x| code_point <= table[x].1)
+            .unwrap_or(false),
     }
 }
 
 fn is_printable(ch: char) -> bool {
     // ASCII is very common, so it should be optimized.
-    match ch {
-        ' '..='~' => true,
-        _ if ch.is_ascii() => false,
-        _ => !table_contains(UNPRINTABLE, ch.into()),
-    }
+    (' '..='~').contains(&ch)
+        || (!ch.is_ascii() && !table_contains(UNPRINTABLE, ch.into()))
 }
 
 enum EscapedCodePoint {
@@ -140,13 +137,11 @@ impl Escape for str {
             }
 
             let code_point = ch.into();
-            escaped = if let EscapedCodePoint::Literal(_) = code_point {
-                false
-            } else {
+            escaped = !matches!(code_point, EscapedCodePoint::Literal(_));
+            if escaped {
                 push_literal!(i);
                 code_point.format(f)?;
-                true
-            };
+            }
         }
         if !escaped {
             push_literal!(self.len());

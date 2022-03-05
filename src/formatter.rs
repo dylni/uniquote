@@ -20,9 +20,6 @@ impl Display for Error {
     }
 }
 
-#[cfg(feature = "std")]
-impl ::std::error::Error for Error {}
-
 /// The type returned by [`Quote::escape`].
 ///
 /// This type is used similarly to [`fmt::Result`] in the standard library.
@@ -63,4 +60,13 @@ impl<'a> Formatter<'a> {
     {
         escape::escape_utf16(iter, &mut self.0).map_err(Error)
     }
+}
+
+#[cfg(feature = "std")]
+mod std {
+    use std::error;
+
+    use super::Error;
+
+    impl error::Error for Error {}
 }

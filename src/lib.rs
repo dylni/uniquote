@@ -45,8 +45,7 @@
 //! # Features
 //!
 //! These features are optional and can be enabled or disabled in a
-//! "Cargo.toml" file. Nightly features are unstable, since they rely on
-//! unstable Rust features.
+//! "Cargo.toml" file.
 //!
 //! ### Default Features
 //!
@@ -109,8 +108,8 @@
 //! [`Path::to_string_lossy`]: ::std::path::Path::to_string_lossy
 //! [`REPLACEMENT_CHARACTER`]: ::std::char::REPLACEMENT_CHARACTER
 
-#![cfg_attr(uniquote_docs_rs, feature(doc_cfg))]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![warn(unsafe_op_in_unsafe_fn)]
 #![warn(unused_results)]
 
 #[cfg(feature = "alloc")]
