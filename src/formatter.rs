@@ -54,6 +54,7 @@ impl<'a> Formatter<'a> {
     /// sequences will be escaped.
     ///
     /// [`Quote::escape`]: super::Quote::escape
+    #[inline]
     pub fn escape_utf16<I>(&mut self, iter: I) -> Result
     where
         I: IntoIterator<Item = u16>,

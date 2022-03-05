@@ -1,5 +1,4 @@
 use core::fmt;
-use core::fmt::Display;
 use core::fmt::Write as _;
 
 use super::Error;
@@ -8,9 +7,9 @@ use super::Result;
 use super::QUOTE;
 
 #[derive(Debug)]
-pub struct QuotedDisplay<T>(T);
+pub struct Display<T>(T);
 
-impl<T> Display for QuotedDisplay<&T>
+impl<T> fmt::Display for Display<&T>
 where
     T: Quote + ?Sized,
 {
@@ -82,8 +81,8 @@ pub trait Quote {
     /// [format]: super#format
     #[inline]
     #[must_use]
-    fn quote(&self) -> QuotedDisplay<&Self> {
-        QuotedDisplay(self)
+    fn quote(&self) -> Display<&Self> {
+        Display(self)
     }
 }
 
