@@ -31,10 +31,10 @@ pub trait Quote {
     ///
     /// # Errors
     ///
-    /// Similar to [`Display::fmt`], this method should fail if and only if the
-    /// formatter returns an error. Since quoting is an infallible operation,
-    /// these failures will only result from inability to write to the
-    /// underlying stream.
+    /// Similarly to [`Display::fmt`], this method should fail if and only if
+    /// the formatter returns an error. Since quoting is an infallible
+    /// operation, these failures will only result from inability to write to
+    /// the underlying stream.
     ///
     /// # Examples
     ///
@@ -54,6 +54,7 @@ pub trait Quote {
     /// assert_eq!(r#""foo,bar""#, Strings("foo", "bar").quote().to_string());
     /// ```
     ///
+    /// [`Display::fmt`]: fmt::Display::fmt
     /// [format]: super#format
     fn escape(&self, f: &mut Formatter<'_>) -> Result;
 
@@ -78,6 +79,7 @@ pub trait Quote {
     /// # Ok::<_, io::Error>(())
     /// ```
     ///
+    /// [`Display`]: fmt::Display
     /// [format]: super#format
     #[inline]
     #[must_use]
