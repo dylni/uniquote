@@ -3,16 +3,16 @@ use std::fmt::Display;
 
 use uniquote::Quote;
 
-fn test<TResult>(expected: &str, result: TResult)
+fn test<T>(expected: &str, result: T)
 where
-    TResult: Display,
+    T: Display,
 {
     assert_eq!(expected, result.to_string());
 }
 
-fn test_unchanged<TString>(string: &TString)
+fn test_unchanged<T>(string: &T)
 where
-    TString: Display + Quote + ?Sized,
+    T: Display + Quote + ?Sized,
 {
     test(&format!(r#""{}""#, string), string.quote());
 }
