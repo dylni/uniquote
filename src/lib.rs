@@ -108,6 +108,11 @@
 //! [`Path::to_string_lossy`]: ::std::path::Path::to_string_lossy
 //! [`REPLACEMENT_CHARACTER`]: ::std::char::REPLACEMENT_CHARACTER
 
+// Nightly is also currently required for the SGX platform.
+#![cfg_attr(
+    all(feature = "std", target_vendor = "fortanix", target_env = "sgx"),
+    feature(sgx_platform)
+)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![warn(unsafe_op_in_unsafe_fn)]
 #![warn(unused_results)]

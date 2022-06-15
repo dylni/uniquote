@@ -155,7 +155,14 @@ mod std {
 
     impl_with_deref!(CString);
 
-    #[cfg(any(target_os = "hermit", target_os = "wasi", unix, windows))]
+    #[cfg(any(
+        all(target_vendor = "fortanix", target_env = "sgx"),
+        target_os = "hermit",
+        target_os = "solid_asp3",
+        target_os = "wasi",
+        unix,
+        windows,
+    ))]
     mod os_str {
         use std::ffi::OsStr;
         use std::ffi::OsString;
@@ -178,6 +185,13 @@ mod std {
                 }
                 #[cfg(not(windows))]
                 {
+                    #[cfg(all(
+                        target_vendor = "fortanix",
+                        target_env = "sgx",
+                    ))]
+                    use std::os::fortanix_sgx as os;
+                    #[cfg(target_os = "solid_asp3")]
+                    use std::os::solid as os;
                     #[cfg(any(target_os = "hermit", unix))]
                     use std::os::unix as os;
                     #[cfg(target_os = "wasi")]
