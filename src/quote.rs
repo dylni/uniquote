@@ -111,7 +111,7 @@ impl<const N: usize> Quote for [u8; N] {
     }
 }
 
-#[cfg_attr(not(feature = "std"), allow(unused_macros))]
+#[cfg(feature = "alloc")]
 macro_rules! impl_with_deref {
     ( $($type:ty),+ ) => {
         $(

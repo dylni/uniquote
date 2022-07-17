@@ -4,15 +4,15 @@ version = "3.1.1"
 authors = ["dylni"]
 edition = "2018"
 rust-version = "1.52.0"
-exclude = [".*", "/rustfmt.toml", "/tests"]
 description = """
 Quote strings for clear display in output
 """
-repository = "https://github.com/dylni/uniquote"
 readme = "README.md"
+repository = "https://github.com/dylni/uniquote"
+license = "MIT OR Apache-2.0"
 keywords = ["osstr", "path", "print", "quote", "unprintable"]
 categories = ["command-line-interface", "no-std", "value-formatting", "wasm"]
-license = "MIT OR Apache-2.0"
+exclude = [".*", "tests.rs", "/rustfmt.toml", "/src/bin", "/tests"]
 
 [package.metadata.docs.rs]
 all-features = true

@@ -69,16 +69,6 @@ fn test_replacement_character() {
 #[cfg(feature = "std")]
 #[test]
 fn test_os_string() {
-    #[cfg(not(windows))]
-    {
-        use std::ffi::OsStr;
-        use std::os::unix::ffi::OsStrExt;
-
-        test(
-            r#""fo{~u80}o""#,
-            OsStr::from_bytes(&[0x66, 0x6F, 0x80, 0x6F]).quote(),
-        );
-    }
     #[cfg(windows)]
     {
         use std::ffi::OsString;
@@ -87,6 +77,16 @@ fn test_os_string() {
         test(
             r#""fo{~ud800}o""#,
             OsString::from_wide(&[0x66, 0x6F, 0xD800, 0x6F]).quote(),
+        );
+    }
+    #[cfg(not(windows))]
+    {
+        use std::ffi::OsStr;
+        use std::os::unix::ffi::OsStrExt;
+
+        test(
+            r#""fo{~u80}o""#,
+            OsStr::from_bytes(&[0x66, 0x6F, 0x80, 0x6F]).quote(),
         );
     }
 }
