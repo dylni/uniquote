@@ -47,14 +47,28 @@ Unless you explicitly state otherwise, any contribution submitted for inclusion
 in this crate, as defined in [LICENSE-APACHE], shall be licensed according to
 [COPYRIGHT], without any additional terms or conditions.
 
+### Third-party content
+
+This crate includes copies and modifications of content developed by third
+parties:
+
+- [src/escape/tables/unprintable.rs] contains structured data defined by
+  Unicode, Inc., licensed under the Unicode License.
+
+See that file for more details.
+
+Copies of third-party licenses can be found in [LICENSE-THIRD-PARTY].
+
 [COPYRIGHT]: https://github.com/dylni/uniquote/blob/master/COPYRIGHT
 [`Display`]: https://doc.rust-lang.org/std/fmt/trait.Display.html
 [documentation]: https://docs.rs/uniquote
 [LICENSE-APACHE]: https://github.com/dylni/uniquote/blob/master/LICENSE-APACHE
+[LICENSE-THIRD-PARTY]: https://github.com/dylni/uniquote/blob/master/LICENSE-THIRD-PARTY
 [`Path`]: https://doc.rust-lang.org/std/path/struct.Path.html
 [`Path::display`]: https://doc.rust-lang.org/std/path/struct.Path.html#method.display
 [`Path::to_string_lossy`]: https://doc.rust-lang.org/std/path/struct.Path.html#method.to_string_lossy
 [`println!`]: https://doc.rust-lang.org/std/macro.println.html
 [`Quote::quote`]: https://docs.rs/uniquote/*/uniquote/trait.Quote.html#method.quote
 [`REPLACEMENT_CHARACTER`]: https://doc.rust-lang.org/std/char/constant.REPLACEMENT_CHARACTER.html
+[src/escape/tables/unprintable.rs]: https://github.com/dylni/uniquote/blob/master/src/escape/tables/unprintable.rs
 [`str::escape_debug`]: https://doc.rust-lang.org/std/primitive.str.html#method.escape_debug
