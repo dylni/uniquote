@@ -97,11 +97,11 @@ impl From<char> for EscapedCodePoint {
 
 impl From<CodePoint> for EscapedCodePoint {
     fn from(value: CodePoint) -> Self {
-        match char::try_from(value) {
-            Ok(ch) => ch.into(),
-            // [value] is now known to be a surrogate, so it is unprintable.
-            Err(_) => Self::Hex(value),
-        }
+        // Upon error, [value] is known to be a surrogate, so it is
+        // unprintable.
+        char::try_from(value)
+            .map(Into::into)
+            .unwrap_or(Self::Hex(value))
     }
 }
 
@@ -155,30 +155,25 @@ impl Escape for [u8] {
     fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let mut string = self;
         while !string.is_empty() {
-            let mut invalid = None;
-            let valid = match str::from_utf8(string) {
-                Ok(string) => string,
-                Err(error) => {
-                    let (valid, string) = string.split_at(error.valid_up_to());
+            let mut invalid = &b""[..];
+            let valid = str::from_utf8(string).unwrap_or_else(|error| {
+                let (valid, string) = string.split_at(error.valid_up_to());
 
-                    let invalid_length =
-                        error.error_len().unwrap_or_else(|| string.len());
-                    invalid = Some(&string[..invalid_length]);
+                let invalid_length =
+                    error.error_len().unwrap_or_else(|| string.len());
+                invalid = &string[..invalid_length];
 
-                    // SAFETY: This slice was validated to be UTF-8.
-                    unsafe { str::from_utf8_unchecked(valid) }
-                }
-            };
+                // SAFETY: This slice was validated to be UTF-8.
+                unsafe { str::from_utf8_unchecked(valid) }
+            });
 
             valid.escape(f)?;
             string = &string[valid.len()..];
 
-            if let Some(invalid) = invalid {
-                for &byte in invalid {
-                    EscapedCodePoint::from(byte).format(f)?;
-                }
-                string = &string[invalid.len()..];
+            for &byte in invalid {
+                EscapedCodePoint::from(byte).format(f)?;
             }
+            string = &string[invalid.len()..];
         }
         Ok(())
     }

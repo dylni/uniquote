@@ -61,7 +61,7 @@
 //!
 //! # Examples
 //!
-//! Print arguments passed on the command line:
+//! **Printing Command Line Arguments:**
 //!
 //! ```
 //! use std::env;
@@ -74,7 +74,7 @@
 //! }
 //! ```
 //!
-//! Create a descriptive error message:
+//! **Creating a Descriptive Error Message:**
 //!
 //! ```
 //! use std::error::Error;
