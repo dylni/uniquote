@@ -114,7 +114,6 @@
     feature(sgx_platform)
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![warn(unsafe_op_in_unsafe_fn)]
 #![warn(unused_results)]
 
 #[cfg(feature = "alloc")]

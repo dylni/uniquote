@@ -17,13 +17,16 @@ use tables::UNPRINTABLE;
 
 fn table_contains(table: &[(u32, u32)], code_point: CodePoint) -> bool {
     let code_point = code_point.into();
-    match table.binary_search_by_key(&code_point, |&(x, _)| x) {
-        Ok(_) => true,
-        Err(index) => index
-            .checked_sub(1)
-            .map(|x| code_point <= table[x].1)
-            .unwrap_or(false),
-    }
+    table
+        .binary_search_by_key(&code_point, |&(x, _)| x)
+        .err()
+        .map(|index| {
+            index
+                .checked_sub(1)
+                .map(|x| code_point <= table[x].1)
+                .unwrap_or(false)
+        })
+        .unwrap_or(true)
 }
 
 fn is_printable(ch: char) -> bool {
@@ -55,7 +58,7 @@ impl EscapedCodePoint {
 
         f.write_char(START_ESCAPE)?;
 
-        if let Self::Quote() = self {
+        if matches!(self, Self::Quote()) {
             f.write_char(QUOTE)?;
         } else {
             f.write_char('~')?;
