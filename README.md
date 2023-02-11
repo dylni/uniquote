@@ -20,7 +20,7 @@ Add the following lines to your "Cargo.toml" file:
 
 ```toml
 [dependencies]
-uniquote = "3.2"
+uniquote = "3.3"
 ```
 
 See the [documentation] for available functionality and examples.
@@ -36,7 +36,7 @@ crate's minor version:
 
 ```toml
 [dependencies]
-uniquote = "~3.2"
+uniquote = "~3.3"
 ```
 
 ## License
