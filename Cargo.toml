@@ -3,7 +3,7 @@ name = "uniquote"
 version = "3.2.1"
 authors = ["dylni"]
 edition = "2021"
-rust-version = "1.56.0"
+rust-version = "1.64.0"
 description = """
 Quote strings for clear display in output
 """

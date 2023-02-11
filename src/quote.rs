@@ -1,3 +1,4 @@
+use core::ffi::CStr;
 use core::fmt;
 use core::fmt::Write as _;
 
@@ -128,33 +129,24 @@ macro_rules! impl_with_deref {
     };
 }
 
+impl Quote for CStr {
+    #[inline]
+    fn escape(&self, f: &mut Formatter<'_>) -> Result {
+        self.to_bytes().escape(f)
+    }
+}
+
 #[cfg(feature = "alloc")]
 mod alloc {
+    use alloc::ffi::CString;
     use alloc::string::String;
     use alloc::vec::Vec;
 
-    impl_with_deref!(String, Vec<u8>);
+    impl_with_deref!(CString, String, Vec<u8>);
 }
 
 #[cfg(feature = "std")]
 mod std {
-    use std::ffi::CStr;
-    use std::ffi::CString;
-
-    use crate::Formatter;
-    use crate::Result;
-
-    use super::Quote;
-
-    impl Quote for CStr {
-        #[inline]
-        fn escape(&self, f: &mut Formatter<'_>) -> Result {
-            self.to_bytes().escape(f)
-        }
-    }
-
-    impl_with_deref!(CString);
-
     #[cfg(any(
         all(target_vendor = "fortanix", target_env = "sgx"),
         target_os = "hermit",
