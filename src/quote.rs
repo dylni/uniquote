@@ -112,6 +112,13 @@ impl<const N: usize> Quote for [u8; N] {
     }
 }
 
+impl Quote for CStr {
+    #[inline]
+    fn escape(&self, f: &mut Formatter<'_>) -> Result {
+        self.to_bytes().escape(f)
+    }
+}
+
 #[cfg(feature = "alloc")]
 macro_rules! impl_with_deref {
     ( $($type:ty),+ ) => {
@@ -127,13 +134,6 @@ macro_rules! impl_with_deref {
             }
         )+
     };
-}
-
-impl Quote for CStr {
-    #[inline]
-    fn escape(&self, f: &mut Formatter<'_>) -> Result {
-        self.to_bytes().escape(f)
-    }
 }
 
 #[cfg(feature = "alloc")]
