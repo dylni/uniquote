@@ -10,7 +10,7 @@ use super::escape;
 /// This type is used similarly to [`fmt::Error`] in the standard library.
 ///
 /// [`Quote::escape`]: super::Quote::escape
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Error(pub(super) fmt::Error);
 
 impl Display for Error {
