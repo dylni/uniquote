@@ -12,7 +12,7 @@ those methods are lossy; they replace all invalid characters with
 [`REPLACEMENT_CHARACTER`]. This crate escapes those invalid characters instead,
 allowing them to always be displayed correctly.
 
-[![GitHub Build Status](https://github.com/dylni/uniquote/workflows/build/badge.svg?branch=master)](https://github.com/dylni/uniquote/actions?query=branch%3Amaster)
+[![GitHub Build Status](https://github.com/dylni/uniquote/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/dylni/uniquote/actions/workflows/build.yml?query=branch%3Amaster)
 
 ## Usage
 

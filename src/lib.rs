@@ -91,7 +91,7 @@
 //! # #[cfg(feature = "std")]
 //! # {
 //! impl Display for FileNotFoundError {
-//!     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+//!     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 //!         write!(f, "file not found at {}", self.0.quote())
 //!     }
 //! }

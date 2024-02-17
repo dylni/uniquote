@@ -33,12 +33,6 @@ pub type Result = result::Result<(), Error>;
 /// uniformly. However, it is usually sufficient to pass this struct to the
 /// [`Quote::escape`] implementation of another type.
 ///
-/// # Safety
-///
-/// Although this type is annotated with `#[repr(transparent)]`, the inner
-/// representation is not stable. Transmuting between this type and any other
-/// causes immediate undefined behavior.
-///
 /// [`Quote::escape`]: super::Quote::escape
 #[repr(transparent)]
 pub struct Formatter<'a>(pub(super) fmt::Formatter<'a>);
@@ -61,7 +55,7 @@ impl<'a> Formatter<'a> {
     where
         I: IntoIterator<Item = u16>,
     {
-        escape::escape_utf16(iter, &mut self.0).map_err(Error)
+        escape::utf16(iter, &mut self.0).map_err(Error)
     }
 }
 

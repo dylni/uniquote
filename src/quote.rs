@@ -91,16 +91,16 @@ pub trait Quote {
 
 macro_rules! r#impl {
     ( $($type:ty),+ ) => {
-        $(
-            impl Quote for $type {
-                #[inline]
-                fn escape(&self, f: &mut Formatter<'_>) -> $crate::Result {
-                    use super::escape::Escape;
+    $(
+        impl Quote for $type {
+            #[inline]
+            fn escape(&self, f: &mut Formatter<'_>) -> $crate::Result {
+                use super::escape::Escape;
 
-                    Escape::escape(self, &mut f.0).map_err(Error)
-                }
+                Escape::escape(self, &mut f.0).map_err(Error)
             }
-        )+
+        }
+    )+
     };
 }
 r#impl!(char, str, [u8]);

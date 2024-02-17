@@ -19,14 +19,13 @@ fn table_contains(table: &[(u32, u32)], code_point: CodePoint) -> bool {
     let code_point = code_point.into();
     table
         .binary_search_by_key(&code_point, |&(x, _)| x)
-        .err()
-        .map(|index| {
+        .map(|_| true)
+        .unwrap_or_else(|index| {
             index
                 .checked_sub(1)
                 .map(|x| code_point <= table[x].1)
                 .unwrap_or(false)
         })
-        .unwrap_or(true)
 }
 
 fn is_printable(ch: char) -> bool {
@@ -37,23 +36,18 @@ fn is_printable(ch: char) -> bool {
 
 enum EscapedCodePoint {
     Hex(CodePoint),
-    Literal(char),
+    Literal { ch: char, escape: bool },
     Quote(),
-    Repeated(char),
     Sequence(&'static str),
 }
 
 impl EscapedCodePoint {
     fn format(self, f: &mut Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Literal(ch) => return f.write_char(ch),
-            Self::Repeated(ch) => {
-                for _ in 0..2 {
-                    f.write_char(ch)?;
-                }
-                return Ok(());
+        if let Self::Literal { ch, escape } = self {
+            for _ in 0..=(escape.into()) {
+                f.write_char(ch)?;
             }
-            _ => {}
+            return Ok(());
         }
 
         f.write_char(START_ESCAPE)?;
@@ -90,9 +84,15 @@ impl From<char> for EscapedCodePoint {
             '\r' => Self::Sequence("r"),
 
             QUOTE => Self::Quote(),
-            END_ESCAPE | START_ESCAPE => Self::Repeated(value),
+            END_ESCAPE | START_ESCAPE => Self::Literal {
+                ch: value,
+                escape: true,
+            },
 
-            _ if is_printable(value) => Self::Literal(value),
+            _ if is_printable(value) => Self::Literal {
+                ch: value,
+                escape: false,
+            },
             _ => Self::Hex(value.into()),
         }
     }
@@ -140,7 +140,10 @@ impl Escape for str {
             }
 
             let code_point = ch.into();
-            escaped = !matches!(code_point, EscapedCodePoint::Literal(_));
+            escaped = !matches!(
+                code_point,
+                EscapedCodePoint::Literal { escape: false, .. },
+            );
             if escaped {
                 push_literal!(i);
                 code_point.format(f)?;
@@ -182,7 +185,7 @@ impl Escape for [u8] {
     }
 }
 
-pub(super) fn escape_utf16<I>(iter: I, f: &mut Formatter<'_>) -> fmt::Result
+pub(super) fn utf16<I>(iter: I, f: &mut Formatter<'_>) -> fmt::Result
 where
     I: IntoIterator<Item = u16>,
 {

@@ -1,4 +1,4 @@
-use std::char;
+use std::char::REPLACEMENT_CHARACTER;
 use std::fmt::Display;
 
 use uniquote::Quote;
@@ -63,12 +63,22 @@ fn test_chinese() {
 
 #[test]
 fn test_replacement_character() {
-    test_unchanged(&char::REPLACEMENT_CHARACTER);
+    test_unchanged(&REPLACEMENT_CHARACTER);
 }
 
 #[cfg(feature = "std")]
 #[test]
 fn test_os_string() {
+    #[cfg(unix)]
+    {
+        use std::ffi::OsStr;
+        use std::os::unix::ffi::OsStrExt;
+
+        test(
+            r#""fo{~u80}o""#,
+            OsStr::from_bytes(b"\x66\x6F\x80\x6F").quote(),
+        );
+    }
     #[cfg(windows)]
     {
         use std::ffi::OsString;
@@ -77,16 +87,6 @@ fn test_os_string() {
         test(
             r#""fo{~ud800}o""#,
             OsString::from_wide(&[0x66, 0x6F, 0xD800, 0x6F]).quote(),
-        );
-    }
-    #[cfg(not(windows))]
-    {
-        use std::ffi::OsStr;
-        use std::os::unix::ffi::OsStrExt;
-
-        test(
-            r#""fo{~u80}o""#,
-            OsStr::from_bytes(&[0x66, 0x6F, 0x80, 0x6F]).quote(),
         );
     }
 }
