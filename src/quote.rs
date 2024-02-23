@@ -136,6 +136,7 @@ macro_rules! impl_with_deref {
     };
 }
 
+#[cfg_attr(feature = "std", allow(unused_imports))]
 #[cfg(feature = "alloc")]
 mod alloc {
     use alloc::ffi::CString;
