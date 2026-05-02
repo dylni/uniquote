@@ -1,4 +1,4 @@
-#![allow(clippy::redundant_static_lifetimes)]
+#![expect(clippy::redundant_static_lifetimes)]
 
 #[rustfmt::skip]
 mod unprintable;

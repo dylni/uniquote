@@ -13,8 +13,6 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: dylni/build-actions/build@master
-      with:
-        nightly-features: 'os_str_bytes'
     timeout-minutes: 10
     strategy:
       matrix:
@@ -25,24 +23,22 @@ jobs:
     steps:
     - uses: dylni/build-actions/build-other@master
       with:
-        nightly-features: 'os_str_bytes'
         target: ${{ matrix.target }}
         version: ${{ matrix.version }}
     timeout-minutes: 10
     strategy:
       matrix:
         target: [wasm32-unknown-unknown, wasm32-wasip1]
-        version: [1.78.0, stable, beta, nightly]
+        version: [1.81.0, stable, beta, nightly]
   test:
     needs: [build]
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: dylni/build-actions/test@master
       with:
-        nightly-features: 'os_str_bytes'
         version: ${{ matrix.version }}
     timeout-minutes: 10
     strategy:
       matrix:
         platform: [macos-latest, ubuntu-latest, windows-latest]
-        version: [1.70.0, stable, beta, nightly]
+        version: [1.81.0, stable, beta, nightly]

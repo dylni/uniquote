@@ -2,7 +2,6 @@ use core::char;
 use core::fmt;
 use core::fmt::Formatter;
 use core::fmt::Write as _;
-use core::str;
 
 #[cfg(feature = "os_str_bytes")]
 use os_str_bytes::OsUnit;
@@ -182,27 +181,12 @@ impl Escape for str {
 
 impl Escape for [u8] {
     fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let mut string = self;
-        while !string.is_empty() {
-            let mut invalid = &b""[..];
-            let valid = str::from_utf8(string).unwrap_or_else(|error| {
-                let (valid, string) = string.split_at(error.valid_up_to());
+        for chunk in self.utf8_chunks() {
+            chunk.valid().escape(f)?;
 
-                let invalid_length =
-                    error.error_len().unwrap_or_else(|| string.len());
-                invalid = &string[..invalid_length];
-
-                // SAFETY: This slice was validated to be UTF-8.
-                unsafe { str::from_utf8_unchecked(valid) }
-            });
-
-            valid.escape(f)?;
-            string = &string[valid.len()..];
-
-            for &byte in invalid {
+            for &byte in chunk.invalid() {
                 EscapedCodePoint::from(byte).format(f)?;
             }
-            string = &string[invalid.len()..];
         }
         Ok(())
     }
