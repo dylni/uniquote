@@ -25,8 +25,7 @@ fn table_contains(table: &[(u32, u32)], code_point: CodePoint) -> bool {
         .unwrap_or_else(|index| {
             index
                 .checked_sub(1)
-                .map(|x| code_point <= table[x].1)
-                .unwrap_or(false)
+                .is_some_and(|x| code_point <= table[x].1)
         })
 }
 
