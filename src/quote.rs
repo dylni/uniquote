@@ -134,7 +134,6 @@ macro_rules! defer_impl {
 }
 defer_impl!(CStr, to_bytes);
 
-#[cfg_attr(feature = "std", allow(unused_imports))]
 #[cfg(feature = "alloc")]
 mod alloc {
     use alloc::ffi::CString;

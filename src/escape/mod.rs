@@ -105,10 +105,12 @@ impl From<CodePoint> for EscapedCodePoint {
     fn from(value: CodePoint) -> Self {
         // Upon error, [value] is known to be a surrogate, so it is
         // unprintable.
-        char::try_from(value).map(Into::into).unwrap_or(Self::Hex {
-            value: value.into(),
-            byte: false,
-        })
+        char::try_from(value)
+            .map(Into::into)
+            .unwrap_or_else(|_| Self::Hex {
+                value: value.into(),
+                byte: false,
+            })
     }
 }
 
