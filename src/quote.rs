@@ -2,6 +2,9 @@ use core::ffi::CStr;
 use core::fmt;
 use core::fmt::Write as _;
 
+#[cfg(feature = "os_str_bytes")]
+use os_str_bytes::OsUnit;
+
 use super::Error;
 use super::Formatter;
 use super::Result;
@@ -74,7 +77,7 @@ pub trait Quote {
     ///
     /// use uniquote::Quote;
     ///
-    /// # #[cfg(feature = "std")]
+    /// # #[cfg(feature = "os_str_bytes")]
     /// println!("{}", env::current_exe()?.quote());
     /// #
     /// # Ok::<_, io::Error>(())
@@ -90,8 +93,9 @@ pub trait Quote {
 }
 
 macro_rules! r#impl {
-    ( $($type:ty),+ ) => {
+    ( $($(#[ $attr:meta ])* $type:ty ,)+ ) => {
     $(
+        $(#[$attr])*
         impl Quote for $type {
             #[inline]
             fn escape(&self, f: &mut Formatter<'_>) -> $crate::Result {
@@ -103,7 +107,13 @@ macro_rules! r#impl {
     )+
     };
 }
-r#impl!(char, str, [u8]);
+r#impl!(
+    char,
+    #[cfg(feature = "os_str_bytes")]
+    OsUnit,
+    str,
+    [u8],
+);
 
 impl<const N: usize> Quote for [u8; N] {
     #[inline]
@@ -112,29 +122,17 @@ impl<const N: usize> Quote for [u8; N] {
     }
 }
 
-impl Quote for CStr {
-    #[inline]
-    fn escape(&self, f: &mut Formatter<'_>) -> Result {
-        self.to_bytes().escape(f)
-    }
-}
-
-#[cfg(feature = "alloc")]
-macro_rules! impl_with_deref {
-    ( $($type:ty),+ ) => {
-        $(
-            impl $crate::Quote for $type {
-                #[inline]
-                fn escape(
-                    &self,
-                    f: &mut $crate::Formatter<'_>
-                ) -> $crate::Result {
-                    (**self).escape(f)
-                }
+macro_rules! defer_impl {
+    ( $type:ty , $convert_method:ident ) => {
+        impl $crate::Quote for $type {
+            #[inline]
+            fn escape(&self, f: &mut $crate::Formatter<'_>) -> $crate::Result {
+                self.$convert_method().escape(f)
             }
-        )+
+        }
     };
 }
+defer_impl!(CStr, to_bytes);
 
 #[cfg_attr(feature = "std", allow(unused_imports))]
 #[cfg(feature = "alloc")]
@@ -143,72 +141,49 @@ mod alloc {
     use alloc::string::String;
     use alloc::vec::Vec;
 
-    impl_with_deref!(CString, String, Vec<u8>);
+    defer_impl!(CString, as_c_str);
+    defer_impl!(String, as_str);
+    defer_impl!(Vec<u8>, as_slice);
 }
 
-#[cfg(feature = "std")]
-mod std {
-    #[cfg(any(
-        all(target_vendor = "fortanix", target_env = "sgx"),
-        target_os = "hermit",
-        target_os = "solid_asp3",
-        target_os = "wasi",
-        target_os = "xous",
-        unix,
-        windows,
-    ))]
-    mod os_str {
-        use std::ffi::OsStr;
-        use std::ffi::OsString;
-        use std::path::Path;
-        use std::path::PathBuf;
+#[cfg(feature = "os_str_bytes")]
+#[cfg_attr(uniquote_docs_rs, doc(cfg(feature = "os_str_bytes")))]
+mod os_str {
+    use core::ops::Deref;
 
-        use crate::Formatter;
-        use crate::Result;
+    use std::ffi::OsStr;
+    use std::ffi::OsString;
+    use std::path::Path;
+    use std::path::PathBuf;
 
-        use super::super::Quote;
+    use os_str_bytes::NonUnicodeOsStr;
+    use os_str_bytes::OsStrBytesExt;
+    use os_str_bytes::RawOsStr;
+    use os_str_bytes::RawOsString;
 
-        impl Quote for OsStr {
-            #[inline]
-            fn escape(&self, f: &mut Formatter<'_>) -> Result {
-                #[cfg(windows)]
-                {
-                    use std::os::windows::ffi::OsStrExt;
+    use crate::Formatter;
+    use crate::Result;
 
-                    f.escape_utf16(self.encode_wide())
+    use super::Quote;
+
+    impl Quote for OsStr {
+        #[inline]
+        fn escape(&self, f: &mut Formatter<'_>) -> Result {
+            for (invalid, valid) in self.utf8_chunks() {
+                for unit in invalid.os_units() {
+                    unit.escape(f)?;
                 }
-                #[cfg(not(windows))]
-                {
-                    #[cfg(all(
-                        target_vendor = "fortanix",
-                        target_env = "sgx",
-                    ))]
-                    use std::os::fortanix_sgx as os;
-                    #[cfg(target_os = "hermit")]
-                    use std::os::hermit as os;
-                    #[cfg(target_os = "solid_asp3")]
-                    use std::os::solid as os;
-                    #[cfg(unix)]
-                    use std::os::unix as os;
-                    #[cfg(target_os = "wasi")]
-                    use std::os::wasi as os;
-                    #[cfg(target_os = "xous")]
-                    use std::os::xous as os;
 
-                    use os::ffi::OsStrExt;
-
-                    self.as_bytes().escape(f)
-                }
+                valid.escape(f)?;
             }
+            Ok(())
         }
-
-        impl Quote for Path {
-            #[inline]
-            fn escape(&self, f: &mut Formatter<'_>) -> Result {
-                self.as_os_str().escape(f)
-            }
-        }
-
-        impl_with_deref!(OsString, PathBuf);
     }
+
+    defer_impl!(NonUnicodeOsStr, as_os_str);
+    defer_impl!(OsString, as_os_str);
+    defer_impl!(Path, as_os_str);
+    defer_impl!(PathBuf, as_path);
+    defer_impl!(RawOsStr, as_os_str);
+    defer_impl!(RawOsString, deref);
 }

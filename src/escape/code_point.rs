@@ -22,6 +22,12 @@ impl From<CodePoint> for u32 {
     }
 }
 
+impl From<CodePoint> for u64 {
+    fn from(value: CodePoint) -> Self {
+        value.0.into()
+    }
+}
+
 impl TryFrom<CodePoint> for char {
     type Error = CharTryFromError;
 

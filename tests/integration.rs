@@ -28,11 +28,11 @@ fn test_bytes() {
             r#"{~u18}{~u19}{~u1a}{~u1b}{~u1c}{~u1d}{~u1e}{~u1f}"#,
             r#" !{"}#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNO"#,
             r#"PQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{{|}}~{~u7f}"#,
-            r#"{~u80}{~u81}{~u82}{~u83}{~u84}{~u85}{~u86}{~u87}"#,
-            r#"{~u88}{~u89}{~u8a}{~u8b}{~u8c}{~u8d}{~u8e}{~u8f}"#,
-            r#"{~u90}{~u91}{~u92}{~u93}{~u94}{~u95}{~u96}{~u97}"#,
-            r#"{~u98}{~u99}{~u9a}{~u9b}{~u9c}{~u9d}{~u9e}{~u9f}"#,
-            r#"{~ua0}¡¢£¤¥¦§¨©ª«¬{~uad}®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ"#,
+            r#"{~x80}{~x81}{~x82}{~x83}{~x84}{~x85}{~x86}{~x87}"#,
+            r#"{~x88}{~x89}{~x8a}{~x8b}{~x8c}{~x8d}{~x8e}{~x8f}"#,
+            r#"{~x90}{~x91}{~x92}{~x93}{~x94}{~x95}{~x96}{~x97}"#,
+            r#"{~x98}{~x99}{~x9a}{~x9b}{~x9c}{~x9d}{~x9e}{~x9f}"#,
+            r#"{~xa0}¡¢£¤¥¦§¨©ª«¬{~xad}®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ"#,
             r#"ÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ"#,
             r#"""#,
         ),
@@ -66,7 +66,7 @@ fn test_replacement_character() {
     test_unchanged(&REPLACEMENT_CHARACTER);
 }
 
-#[cfg(feature = "std")]
+#[cfg(feature = "os_str_bytes")]
 #[test]
 fn test_os_string() {
     #[cfg(unix)]
@@ -75,7 +75,7 @@ fn test_os_string() {
         use std::os::unix::ffi::OsStrExt;
 
         test(
-            r#""fo{~u80}o""#,
+            r#""fo{~x80}o""#,
             OsStr::from_bytes(b"\x66\x6F\x80\x6F").quote(),
         );
     }

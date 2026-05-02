@@ -4,6 +4,9 @@ use core::fmt::Formatter;
 use core::fmt::Write as _;
 use core::str;
 
+#[cfg(feature = "os_str_bytes")]
+use os_str_bytes::OsUnit;
+
 use super::END_ESCAPE;
 use super::QUOTE;
 use super::START_ESCAPE;
@@ -34,13 +37,30 @@ fn is_printable(ch: char) -> bool {
 }
 
 enum EscapedCodePoint {
-    Hex(CodePoint),
+    Hex { value: u64, byte: bool },
     Literal { ch: char, escape: bool },
     Quote(),
     Sequence(&'static str),
 }
 
 impl EscapedCodePoint {
+    fn new(ch: char, byte: bool) -> Self {
+        match ch {
+            '\t' => Self::Sequence("t"),
+            '\n' => Self::Sequence("n"),
+            '\r' => Self::Sequence("r"),
+
+            QUOTE => Self::Quote(),
+            END_ESCAPE | START_ESCAPE => Self::Literal { ch, escape: true },
+
+            _ if is_printable(ch) => Self::Literal { ch, escape: false },
+            _ => Self::Hex {
+                value: ch.into(),
+                byte,
+            },
+        }
+    }
+
     fn format(self, f: &mut Formatter<'_>) -> fmt::Result {
         if let Self::Literal { ch, escape } = self {
             for _ in 0..=(escape.into()) {
@@ -57,8 +77,8 @@ impl EscapedCodePoint {
             f.write_char('~')?;
 
             match self {
-                Self::Hex(code_point) => {
-                    write!(f, "u{:x}", u32::from(code_point))?;
+                Self::Hex { value, byte } => {
+                    write!(f, "{}{:x}", if byte { 'x' } else { 'u' }, value)?;
                 }
                 Self::Sequence(sequence) => f.write_str(sequence)?,
                 _ => unreachable!(),
@@ -71,29 +91,13 @@ impl EscapedCodePoint {
 
 impl From<u8> for EscapedCodePoint {
     fn from(value: u8) -> Self {
-        char::from(value).into()
+        Self::new(value.into(), true)
     }
 }
 
 impl From<char> for EscapedCodePoint {
     fn from(value: char) -> Self {
-        match value {
-            '\t' => Self::Sequence("t"),
-            '\n' => Self::Sequence("n"),
-            '\r' => Self::Sequence("r"),
-
-            QUOTE => Self::Quote(),
-            END_ESCAPE | START_ESCAPE => Self::Literal {
-                ch: value,
-                escape: true,
-            },
-
-            _ if is_printable(value) => Self::Literal {
-                ch: value,
-                escape: false,
-            },
-            _ => Self::Hex(value.into()),
-        }
+        Self::new(value, false)
     }
 }
 
@@ -101,9 +105,21 @@ impl From<CodePoint> for EscapedCodePoint {
     fn from(value: CodePoint) -> Self {
         // Upon error, [value] is known to be a surrogate, so it is
         // unprintable.
-        char::try_from(value)
-            .map(Into::into)
-            .unwrap_or(Self::Hex(value))
+        char::try_from(value).map(Into::into).unwrap_or(Self::Hex {
+            value: value.into(),
+            byte: false,
+        })
+    }
+}
+
+#[cfg(feature = "os_str_bytes")]
+impl From<OsUnit> for EscapedCodePoint {
+    fn from(value: OsUnit) -> Self {
+        let value = value.to_u64();
+        Self::Hex {
+            value,
+            byte: value <= 0xFF,
+        }
     }
 }
 
@@ -114,6 +130,13 @@ pub(super) trait Escape {
 impl Escape for char {
     fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
         self.encode_utf8(&mut [0; 4]).escape(f)
+    }
+}
+
+#[cfg(feature = "os_str_bytes")]
+impl Escape for OsUnit {
+    fn escape(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        EscapedCodePoint::from(*self).format(f)
     }
 }
 

@@ -16,9 +16,16 @@ exclude = [".*", "tests.rs", "/rustfmt.toml", "/src/bin", "/tests"]
 
 [package.metadata.docs.rs]
 all-features = true
+rustc-args = ["--cfg", "uniquote_docs_rs"]
+rustdoc-args = ["--cfg", "uniquote_docs_rs"]
+
+[dependencies]
+os_str_bytes = { version = "7.2", features = ["raw_os_str"], default-features = false, optional = true }
 
 [features]
 default = ["std"]
 
 alloc = []
 std = ["alloc"]
+
+os_str_bytes = ["dep:os_str_bytes", "std"]

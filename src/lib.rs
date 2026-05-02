@@ -59,6 +59,19 @@
 //!   library. When this feature is disabled, this crate can be used in
 //!   `#![no_std]` environments.
 //!
+//! ### Optional Features
+//!
+//! - **os\_str\_bytes** -
+//!   Provides implementations of [`Quote`] for:
+//!   - [`OsStr`]
+//!   - [`OsString`]
+//!   - [`Path`]
+//!   - [`PathBuf`]
+//!   - [`os_str_bytes::NonUnicodeOsStr`]
+//!   - [`os_str_bytes::OsUnit`]
+//!   - [`os_str_bytes::RawOsStr`]
+//!   - [`os_str_bytes::RawOsString`]
+//!
 //! # Examples
 //!
 //! **Printing Command Line Arguments:**
@@ -69,7 +82,7 @@
 //! use uniquote::Quote;
 //!
 //! for (i, arg) in env::args_os().enumerate() {
-//! #   #[cfg(feature = "std")]
+//! #   #[cfg(feature = "os_str_bytes")]
 //!     println!("arg #{} is {}", i, arg.quote());
 //! }
 //! ```
@@ -88,7 +101,7 @@
 //! #[derive(Debug)]
 //! struct FileNotFoundError(PathBuf);
 //!
-//! # #[cfg(feature = "std")]
+//! # #[cfg(feature = "os_str_bytes")]
 //! # {
 //! impl Display for FileNotFoundError {
 //!     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -103,16 +116,18 @@
 //! [control characters]: char::is_ascii_control
 //! [`Debug`]: ::std::fmt::Debug
 //! [`Display`]: ::std::fmt::Display
+//! [`OsStr`]: ::std::ffi::OsStr
+//! [`OsString`]: ::std::ffi::OsString
 //! [`Path`]: ::std::path::Path
 //! [`Path::display`]: ::std::path::Path::display
 //! [`Path::to_string_lossy`]: ::std::path::Path::to_string_lossy
-//! [`REPLACEMENT_CHARACTER`]: ::std::char::REPLACEMENT_CHARACTER
+//! [`PathBuf`]: ::std::path::PathBuf
+//! [`REPLACEMENT_CHARACTER`]: char::REPLACEMENT_CHARACTER
 
-// Nightly is also currently required for the SGX platform.
-#![cfg_attr(
-    all(feature = "std", target_vendor = "fortanix", target_env = "sgx"),
-    feature(sgx_platform)
-)]
+// Only require a nightly compiler when building documentation for docs.rs.
+// This is a private option that should not be used.
+// https://github.com/rust-lang/docs.rs/issues/147#issuecomment-389544407
+#![cfg_attr(uniquote_docs_rs, feature(doc_cfg))]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![warn(unused_results)]
 
